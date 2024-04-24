@@ -1,10 +1,7 @@
 package model;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class Album {
+public class Album extends Observable {
     private Album parentAlbum;
     private String albumName;
     private Set<SoundClip> SoundClips;
@@ -45,6 +42,9 @@ public class Album {
         subAlbums.removeAll(albums);
         for (Album a : albums) {
             a.parentAlbum = null;
+            setChanged();
+            notifyObservers("albumRemoved");
+            System.out.println("Observers notified about album removal");
         }
     }
 
@@ -61,6 +61,8 @@ public class Album {
         if (parentAlbum != null) {
             parentAlbum.addSoundClips(clips);
         }
+        setChanged();
+        notifyObservers();
     }
 
     /** Removes a SoundClip from the album
@@ -76,6 +78,8 @@ public class Album {
         for (Album a : subAlbums) {
             a.removeSoundClips(clips);
         }
+        setChanged();
+        notifyObservers();
     }
 
     /** @return - The albumName of the album */

@@ -102,8 +102,10 @@ public class MusicOrganizerController {
 		// TODO: Add your code here
 		List<SoundClip> selectedClips = view.getSelectedSoundClips();
 		Album selectedAlbum = view.getSelectedAlbum();
-		selectedAlbum.removeSoundClips(new HashSet<>(selectedClips));
-		view.onClipsUpdated();
+		if (!selectedAlbum.equals(root)) {
+			selectedAlbum.removeSoundClips(new HashSet<>(selectedClips));
+			view.onClipsUpdated();
+		}
 	}
 	
 	/**

@@ -4,12 +4,9 @@ package view;
 import controller.MusicOrganizerController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 public class ButtonPaneHBox extends HBox {
 
@@ -22,6 +19,7 @@ public class ButtonPaneHBox extends HBox {
 	private Button removeSoundClipsButton;	
 	private Button playButton;
 	private Button newWindowButton;
+	private AlbumWindowCreator albumWindowCreator = new AlbumWindowCreator();
 	public static final int BUTTON_MIN_WIDTH = 150;
 
 	
@@ -144,26 +142,8 @@ public class ButtonPaneHBox extends HBox {
 		button.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO add code later
-				// Create a new stage (window)
-				Stage newWindow = new Stage();
-
-				// Create a new scene for the new window
-				Scene scene = new Scene(new Group(), 450, 250);
-
-				// Set the scene for the new window
-				newWindow.setScene(scene);
-
-				// Set the title for the new window
-				newWindow.setTitle(view.getSelectedAlbum().toString());
-
-				// Display the content of the album here
-				// TODO add code later
-
-				// Show the new window
-				newWindow.show();
+				albumWindowCreator.createWindow(view.getSelectedAlbum());
 			}
-
 		});
 		return button;
 	}
