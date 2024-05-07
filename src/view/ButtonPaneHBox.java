@@ -19,7 +19,6 @@ public class ButtonPaneHBox extends HBox {
 	private Button removeSoundClipsButton;	
 	private Button playButton;
 	private Button newWindowButton;
-	private AlbumWindowCreator albumWindowCreator = new AlbumWindowCreator();
 	public static final int BUTTON_MIN_WIDTH = 150;
 
 	
@@ -142,7 +141,7 @@ public class ButtonPaneHBox extends HBox {
 		button.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent arg0) {
-				albumWindowCreator.createWindow(view.getSelectedAlbum());
+				controller.createNewWindow(view.getSelectedAlbum());
 			}
 		});
 		return button;

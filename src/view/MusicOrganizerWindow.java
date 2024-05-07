@@ -107,6 +107,7 @@ public class MusicOrganizerWindow extends Application {
 				if(e.getClickCount()==2) {
 					// This code gets invoked whenever the user double clicks in the TreeView
 					// TODO: ADD YOUR CODE HERE
+					getSelectedTreeItem().setExpanded(true);
 					Album selectedAlbum = getSelectedAlbum();
 					if(selectedAlbum != null) {
 						soundClipTable.display(selectedAlbum);
@@ -233,7 +234,6 @@ public class MusicOrganizerWindow extends Application {
 		TreeItem<Album> toRemove = getSelectedTreeItem(); 
 		TreeItem<Album> parent = toRemove.getParent();
 		parent.getChildren().remove(toRemove);
-		
 	}
 	
 	/**

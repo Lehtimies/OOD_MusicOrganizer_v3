@@ -1,13 +1,18 @@
 package view;
 
+import controller.MusicOrganizerController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import javafx.scene.input.MouseEvent;
+import javafx.event.EventHandler;
 import model.Album;
 import model.SoundClip;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.util.HashSet;
 import java.util.Observable;
@@ -21,6 +26,13 @@ public class AlbumWindowCreator {
      * Creates a new window displaying the contents of an Album
      * @param initialAlbum The Album to display in the window
      */
+
+    private MusicOrganizerController controller;
+
+    public void setController(MusicOrganizerController controller) {
+        this.controller = controller;
+    }
+
     public void createWindow(Album initialAlbum) {
         // Create a new window
         Stage newWindow = new Stage();
@@ -39,8 +51,8 @@ public class AlbumWindowCreator {
         Observer observer = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
+                // If the Album has been removed, close the window. If not then update the ListView
                 if(arg instanceof String && arg.equals("albumRemoved")) {
-                    // TODO Fix issue where the parent album's window is the one that closes instead of the removed album's window
                     newWindow.close();
                 } else {
                     observableList.setAll(initialAlbum.getSoundClips());
@@ -48,9 +60,22 @@ public class AlbumWindowCreator {
             }
         };
 
+        // Add an event handler to the Window so that sound-clips are played when you double-click them
+        listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                List<SoundClip> selectedClip = new ArrayList<>();
+                selectedClip.add(listView.getSelectionModel().getSelectedItem());
+                if (e.getClickCount() == 2) {
+                    controller.playSoundClips(selectedClip);
+                }
+            }
+        });
+
+
+
         // Add the Observer to the Album
         initialAlbum.addObserver(observer);
-        System.out.println("Observer added to album"); // Test to see if the observer is added
 
         // Add the ListView to the new window
         ((Group) scene.getRoot()).getChildren().add(listView);

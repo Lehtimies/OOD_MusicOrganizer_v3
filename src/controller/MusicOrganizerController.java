@@ -9,6 +9,7 @@ import model.SoundClip;
 import model.SoundClipBlockingQueue;
 import model.SoundClipLoader;
 import model.SoundClipPlayer;
+import view.AlbumWindowCreator;
 import view.MusicOrganizerWindow;
 
 public class MusicOrganizerController {
@@ -16,6 +17,7 @@ public class MusicOrganizerController {
 	private MusicOrganizerWindow view;
 	private SoundClipBlockingQueue queue;
 	private Album root;
+	private AlbumWindowCreator albumWindowCreator = new AlbumWindowCreator();
 	/**
 	 * Adds an album to the Music Organizer
 	 */
@@ -31,6 +33,8 @@ public class MusicOrganizerController {
 		// Create a separate thread for the sound clip player and start it
 
 		(new Thread(new SoundClipPlayer(queue))).start();
+
+		albumWindowCreator.setController(this);
 	}
 
 	/**
@@ -48,9 +52,7 @@ public class MusicOrganizerController {
 		return clips;
 	}
 
-	public void registerView(MusicOrganizerWindow view) {
-		this.view = view;
-	}
+	public void registerView(MusicOrganizerWindow view) {this.view = view;}
 
 	/**
 	 * Returns the root album
@@ -78,7 +80,7 @@ public class MusicOrganizerController {
 	public void deleteAlbum(){ //TODO Update parameters if needed
 		// TODO: Add your code here
 		Album selectedAlbum = view.getSelectedAlbum();
-		selectedAlbum.getParentAlbum().removeAlbum(selectedAlbum);
+		selectedAlbum.removeAlbum(selectedAlbum);
 		view.onAlbumRemoved();
 	}
 	
@@ -116,9 +118,17 @@ public class MusicOrganizerController {
 	 */
 	public void playSoundClips(){
 		List<SoundClip> l = view.getSelectedSoundClips();
+		playSoundClips(l);
+	}
+
+	public void playSoundClips(List<SoundClip> l){
 		queue.enqueue(l);
 		for(int i=0;i<l.size();i++) {
 			view.displayMessage("Playing " + l.get(i));
 		}
+	}
+
+	public void createNewWindow(Album album) {
+		albumWindowCreator.createWindow(view.getSelectedAlbum());
 	}
 }
