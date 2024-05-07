@@ -105,8 +105,7 @@ public class MusicOrganizerWindow extends Application {
 			@Override
 			public void handle(MouseEvent e) {
 				if(e.getClickCount()==2) {
-					// This code gets invoked whenever the user double clicks in the TreeView
-					// TODO: ADD YOUR CODE HERE
+					// This code gets invoked whenever the user double-clicks in the TreeView
 					getSelectedTreeItem().setExpanded(true);
 					Album selectedAlbum = getSelectedAlbum();
 					if(selectedAlbum != null) {
@@ -134,13 +133,10 @@ public class MusicOrganizerWindow extends Application {
 			@Override
 			public void handle(MouseEvent e) {
 				if(e.getClickCount() == 2) {
-					// This code gets invoked whenever the user double clicks in the sound clip table
-					// TODO: ADD YOUR CODE HERE
+					// This code gets invoked whenever the user double-clicks in the sound clip table
 					controller.playSoundClips();
 				}
-				
 			}
-			
 		});
 		
 		return v;

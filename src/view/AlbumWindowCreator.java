@@ -22,17 +22,17 @@ import java.util.Observer;
  * A class that creates a new window displaying the contents of an Album
  */
 public class AlbumWindowCreator {
-    /**
-     * Creates a new window displaying the contents of an Album
-     * @param initialAlbum The Album to display in the window
-     */
-
     private MusicOrganizerController controller;
 
+    // Set the controller for the windows
     public void setController(MusicOrganizerController controller) {
         this.controller = controller;
     }
 
+    /**
+     * Creates a new window displaying the contents of an Album
+     * @param initialAlbum The Album to display in the window
+     */
     public void createWindow(Album initialAlbum) {
         // Create a new window
         Stage newWindow = new Stage();
@@ -60,7 +60,7 @@ public class AlbumWindowCreator {
             }
         };
 
-        // Add an event handler to the Window so that sound-clips are played when you double-click them
+        // Add an event handler to the Window so that sound clips are played when you double-click them
         listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {

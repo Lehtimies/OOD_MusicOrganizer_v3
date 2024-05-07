@@ -33,22 +33,9 @@ public class Album extends Observable {
     /** Removes an album
      * @param album The album to be removed*/
     public void removeAlbum(Album album) {
-        //removeAlbums(Set.of(album));
         getParentAlbum().getSubAlbums().remove(album);
         setChanged();
         notifyObservers("albumRemoved");
-    }
-
-    /** Removes one or more albums
-     * @param albums The albums to be removed */
-    public void removeAlbums(Set<Album> albums) {
-        /*subAlbums.removeAll(albums);
-        for (Album a : albums) {
-            a.parentAlbum = null;
-            setChanged();
-            notifyObservers("albumRemoved");
-            System.out.println("Observers notified about album removal");
-        }*/
     }
 
     /** Adds a SoundClip to the album

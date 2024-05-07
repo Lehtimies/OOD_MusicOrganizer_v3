@@ -24,7 +24,7 @@ public class MusicOrganizerController {
 
 	public MusicOrganizerController() {
 
-		// TODO: Create the root album for all sound clips
+		// Create the root album
 		root = new Album();
 
 		// Create the blocking queue
@@ -34,6 +34,7 @@ public class MusicOrganizerController {
 
 		(new Thread(new SoundClipPlayer(queue))).start();
 
+		// Set the controller for the windows
 		albumWindowCreator.setController(this);
 	}
 
@@ -43,7 +44,6 @@ public class MusicOrganizerController {
 	 */
 	public Set<SoundClip> loadSoundClips(String path) {
 		Set<SoundClip> clips = SoundClipLoader.loadSoundClips(path);
-		// TODO: Add the loaded sound clips to the root album
 
 		for (SoundClip clip : clips) {
 			root.addSoundClip(clip);
@@ -61,8 +61,7 @@ public class MusicOrganizerController {
 		return root;
 	}
 
-	public void addNewAlbum(){ //TODO Update parameters if needed - e.g. you might want to give the currently selected album as parameter
-		// TODO: Add your code here
+	public void addNewAlbum(){
 		String albumName = view.promptForAlbumName();
 		if(albumName != null) {
 			Album parentAlbum = view.getSelectedAlbum();
@@ -77,8 +76,7 @@ public class MusicOrganizerController {
 	/**
 	 * Removes an album from the Music Organizer
 	 */
-	public void deleteAlbum(){ //TODO Update parameters if needed
-		// TODO: Add your code here
+	public void deleteAlbum(){
 		Album selectedAlbum = view.getSelectedAlbum();
 		selectedAlbum.removeAlbum(selectedAlbum);
 		view.onAlbumRemoved();
@@ -87,8 +85,7 @@ public class MusicOrganizerController {
 	/**
 	 * Adds sound clips to an album
 	 */
-	public void addSoundClips(){ //TODO Update parameters if needed
-		// TODO: Add your code here
+	public void addSoundClips(){
 		List<SoundClip> selectedClips = view.getSelectedSoundClips();
 		Album selectedAlbum = view.getSelectedAlbum();
 		if (selectedAlbum != null) {
@@ -100,8 +97,7 @@ public class MusicOrganizerController {
 	/**
 	 * Removes sound clips from an album
 	 */
-	public void removeSoundClips(){ //TODO Update parameters if needed
-		// TODO: Add your code here
+	public void removeSoundClips(){
 		List<SoundClip> selectedClips = view.getSelectedSoundClips();
 		Album selectedAlbum = view.getSelectedAlbum();
 		if (!selectedAlbum.equals(root)) {
@@ -121,14 +117,21 @@ public class MusicOrganizerController {
 		playSoundClips(l);
 	}
 
-	public void playSoundClips(List<SoundClip> l){
-		queue.enqueue(l);
-		for(int i=0;i<l.size();i++) {
-			view.displayMessage("Playing " + l.get(i));
+	/** Takes a specific list of sound clips and plays them
+	 * @param clips - the list of sound clips to be played
+	 */
+	public void playSoundClips(List<SoundClip> clips){
+		queue.enqueue(clips);
+		for(int i=0;i<clips.size();i++) {
+			view.displayMessage("Playing " + clips.get(i));
 		}
 	}
 
+	/**
+	 * Creates a new window displaying the contents of an Album
+	 * @param album
+	 */
 	public void createNewWindow(Album album) {
-		albumWindowCreator.createWindow(view.getSelectedAlbum());
+		albumWindowCreator.createWindow(album);
 	}
 }
