@@ -1,7 +1,8 @@
 package model;
+import java.io.Serializable;
 import java.util.*;
 
-public class Album extends Observable {
+public class Album extends Observable implements Serializable {
     private Album parentAlbum;
     private String albumName;
     private Set<SoundClip> SoundClips;

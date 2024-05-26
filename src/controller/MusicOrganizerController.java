@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.stage.FileChooser;
 import model.Album;
 import model.SoundClip;
 import model.SoundClipBlockingQueue;
@@ -11,8 +12,11 @@ import model.SoundClipLoader;
 import model.SoundClipPlayer;
 import view.AlbumWindowCreator;
 import view.MusicOrganizerWindow;
+import java.io.*;
+import java.nio.file.Files;
+import javafx.stage.Stage;
 
-public class MusicOrganizerController {
+public class MusicOrganizerController implements Serializable {
 
 	private MusicOrganizerWindow view;
 	private SoundClipBlockingQueue queue;
@@ -68,7 +72,7 @@ public class MusicOrganizerController {
 			Album newAlbum = new Album(albumName, parentAlbum);
 			if (parentAlbum != null) {
 				parentAlbum.addAlbum(newAlbum);
-				view.onAlbumAdded(newAlbum);
+				view.onAlbumAdded(parentAlbum, newAlbum);
 			}
 		}
 	}
@@ -79,7 +83,7 @@ public class MusicOrganizerController {
 	public void deleteAlbum(){
 		Album selectedAlbum = view.getSelectedAlbum();
 		selectedAlbum.removeAlbum(selectedAlbum);
-		view.onAlbumRemoved();
+		view.onAlbumRemoved(selectedAlbum);
 	}
 	
 	/**
@@ -126,7 +130,114 @@ public class MusicOrganizerController {
 			view.displayMessage("Playing " + clips.get(i));
 		}
 	}
+	/**
+	 * Saves the current view to a file
+	 */
+	public void saveAs(Stage primaryStage) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save As");
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("HTML", "*.html"), new FileChooser.ExtensionFilter("Searialize", "*.ser"));
+		File file = fileChooser.showSaveDialog(primaryStage);
+		String fileExtension = file.getName().substring(file.getName().lastIndexOf("."));
+		if (file != null) {
+			if (fileExtension.equals(".html")) {
+				file = createHTML(root, file);
+				view.displayMessage("Successfully saved to " + file.getName());
+			} else if (fileExtension.equals(".ser")) {
+				saveHierarchy(file);
+				view.displayMessage("Successfully saved to " + file.getName());
+			} else {
+				view.displayMessage("Invalid file type.");
+			}
+		}
+	}
 
+	/**
+	 * Saves the hierarchy to a .ser file
+	 * @param file
+	 */
+	public void saveHierarchy(File file) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+			out.writeObject(root);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Loads a hierarchy from a .ser file
+	 */
+	public void loadHierarchy() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Load Hierarchy");
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Searialize", "*.ser")); // only allow loading .ser files
+		File file = fileChooser.showOpenDialog(null);
+		if (file != null) {
+			view.displayMessage("Loading " + file.getName());
+			try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+				root = (Album) in.readObject();
+				view.updateTreeView(root);
+				view.onClipsUpdated();
+				view.displayMessage("Successfully loaded hierarchy from " + file.getName());
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Creates an HTML file from the album hierarchy
+	 * @param album
+	 * @param file
+	 * @return the created HTML file
+	 */
+	public File createHTML(Album album, File file) {
+		String html = createAlbumHTML(album);
+		File htmlFile = new File("HTMLTemplate/template.html"); // template file
+		String htmlString = getHtmlString(htmlFile); // get the template as a string
+		String title = "Music Organizer";
+		htmlString = htmlString.replace("$title", title);
+		htmlString = htmlString.replace("$list", html); // replace the list with the album hierarchy
+		try {
+			Files.write(file.toPath(), htmlString.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return file;
+	}
+
+	/**
+	 * Gets the contents of an HTML file as a string
+	 * @param html
+	 * @return the HTML file as a string
+	 */
+	public String getHtmlString(File html){
+		String htmlString = "";
+		try {
+			htmlString = new String(Files.readAllBytes(html.toPath()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return htmlString;
+	}
+
+	/**
+	 * Creates an HTML representation of the album hierarchy
+	 * @param album
+	 * @return the HTML representation of the album hierarchy
+	 */
+	public String createAlbumHTML(Album album){
+		String html = "<ul>"; // start of the list
+		for (Album subAlbum : album.getSubAlbums()){
+			html += "<li><b>" + subAlbum.toString() + "</b></li>"; // add a list item for every subAlbum
+			html += createAlbumHTML(subAlbum); // add the subAlbum's subAlbums
+		}
+		for (SoundClip clip : album.getSoundClips()){
+			html += "<li>" + clip.toString() + "</li>"; // add a list item for every SoundClip
+		}
+		html += "</ul>"; // end of the list
+		return html;
+	}
 	/**
 	 * Creates a new window displaying the contents of an Album
 	 * @param album
